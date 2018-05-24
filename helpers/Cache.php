@@ -34,7 +34,7 @@ class Cache
         if (is_null($value)) {
             return $default;
         } else {
-            if ($array = json_decode($value, true)) {
+            if (is_array($array = json_decode($value, true))) {
                 return $array;
             } else {
                 return $value;
