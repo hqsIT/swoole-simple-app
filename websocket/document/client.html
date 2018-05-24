@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html" />
+    <meta name="author" content="https://www.baidu.com" />
+    <title>websocket client</title>
+    <script>
+        var socket;
+        function Connect(){
+            try{
+                socket=new WebSocket('ws://127.0.0.1:1099');
+            }catch(e){
+                alert('error');
+                return;
+            }
+            socket.onopen = sOpen;
+            socket.onerror = sError;
+            socket.onmessage= sMessage;
+            socket.onclose= sClose;
+        }
+        function sOpen(){
+            console.log('connect success!');
+            show('connect now -----------');
+            alert('connect success!');
+        }
+        function sError(e){
+            console.log("error " + e);
+//            alert("error " + e);
+        }
+        function sMessage(e){
+            show(e.data);
+//            alert('server says:' + e.data);
+            console.log("server says:");
+            console.log(e);
+        }
+        function sClose(e){
+            console.log("connect closed:" + e.code);
+            alert("connect closed:" + e.code);
+        }
+        function Send(){
+            console.log('send now');
+            socket.send(document.getElementById("msg").value);
+        }
+        function Close(){
+            console.log('close now');
+            show('close now -----------');
+            socket.close();
+        }
+
+        function show($message) {
+            var box = document.getElementById('content');
+            var p = document.createElement('p');
+            p.innerHTML = $message;
+            box.append(p);
+        }
+    </script>
+</head>
+
+<body>
+<input id="msg" type="text">
+<button id="connect" onclick="Connect();">Connect</button>
+<button id="send" onclick="Send();">Send</button>
+<button id="close" onclick="Close();">Close</button>
+<hr>
+<div id="content">
+
+</div>
+</body>
+
+</html>
