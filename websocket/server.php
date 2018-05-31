@@ -6,7 +6,7 @@ class WebSocketTest {
     public $redis;
     public function __construct() {
         $this->cache = Cache::instance();
-        $this->server = new swoole_websocket_server("127.0.0.1", 1099);
+        $this->server = new swoole_websocket_server("0.0.0.0", 1099);
 
         $this->server->set([
             // 静态资源服务器
@@ -21,10 +21,11 @@ class WebSocketTest {
         ]);
 
         // 设置onHandShake回调函数后不会再触发onOpen事件，需要应用代码自行处理
-        //$this->server->on('handshake', array($this, 'onHandShake'));
+        $this->server->on('handshake', array($this, 'onHandShake'));
 
         $this->server->on('open', function (swoole_websocket_server $server, $request) {
             //echo $request->header['sec-websocket-key'] . PHP_EOL;
+            print_r($request);
             print_r($server->connection_info($request->fd));
             $connections = $this->cache->get('connections', []);
             if (empty($connections)) {
@@ -44,6 +45,7 @@ class WebSocketTest {
         });
 
         $this->server->on('message', function (swoole_websocket_server $server, $frame) {
+            var_dump($frame);
             echo "receive from {$frame->fd}, opcode:{$frame->opcode}, finish:{$frame->finish}, data:\n{$frame->data}\n";
 
             //$server->push($frame->fd, json_encode([
@@ -78,7 +80,7 @@ class WebSocketTest {
             //print_r($request);
             //print_r($response);
 
-            $response->end();
+            $response->end('hello');
         });
 
         $this->server->start();
